@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="Client v.0.1" Height="600" Width="800">
+        Title="Client v.0.2" Height="600" Width="800">
     <Grid>
         <ListBox Name="UserFiles" HorizontalAlignment="Left" Height="450" Margin="10,55,0,0" VerticalAlignment="Top" Width="627"/>
         <Button Name="ConnectB" Content="Connect" HorizontalAlignment="Left" Margin="642,153,0,0" VerticalAlignment="Top" Width="120" Height="20"/>
@@ -16,6 +16,7 @@
         <Button Name="SendB" Content="Send file" HorizontalAlignment="Left" Margin="10,510,0,0" VerticalAlignment="Top" Width="627" Height="20"/>
         <Button Name="BackB" Content="Back" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="562,30,0,0" Click="BackB_Click"/>
         <TextBlock Name="PathBox" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Margin="10,30,0,0" Width="552" Height="20"/>
+        <TextBlock HorizontalAlignment="Left" Margin="642,178,30,0" TextWrapping="Wrap" Text="not connected" VerticalAlignment="Top" Width="120" TextAlignment="Center" Foreground="Red"/>
 
     </Grid>
 </Window>

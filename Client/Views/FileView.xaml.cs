@@ -27,5 +27,13 @@ namespace Client.Views
             FileName.Text = myFile.Name;
             FileCreationTime.Text = myFile.CreationDate.ToString();
         }
+
+        public delegate void fileSelect(MyFile file);
+        public event fileSelect fileSelection;
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            fileSelection.Invoke(myFile);
+        }
     }
 }

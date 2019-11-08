@@ -5,10 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Client.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="30" d:DesignWidth="600">
+             d:DesignHeight="30" d:DesignWidth="590">
     <Grid>
         <Image HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="30" Margin="5,0,0,0" Source="C:\Users\przem\git_repos\SIK\Client\Client\Images\file.png"/>
-        <TextBlock Name="FileName" HorizontalAlignment="Left" Margin="50,4,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" Width="300"/>
+        <TextBlock Name="FileName" HorizontalAlignment="Left" Margin="50,4,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" Width="415"/>
         <TextBlock Name="FileCreationTime" HorizontalAlignment="Left" Margin="470,4,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="22"/>
+        <Button Content="Button" HorizontalAlignment="Left" VerticalAlignment="Top" Width="590" Height="30" Opacity="0" Click="Button_Click"/>
     </Grid>
 </UserControl>

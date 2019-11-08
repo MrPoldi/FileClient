@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Classes\ConnectionController.cs" />
     <Compile Include="Views\DirView.xaml.cs">
       <DependentUpon>DirView.xaml</DependentUpon>
     </Compile>

@@ -24,6 +24,7 @@ namespace Client
         private List<DiscElement> myDiscElements;
         private string currentPath;
         private DirectoryInfo dirInfo;
+        private MyFile fileToSend;
 
         public MainWindow()
         {
@@ -45,6 +46,7 @@ namespace Client
                 if (discElement is MyFile)
                 {
                     FileView fileView = new FileView((discElement as MyFile));
+                    fileView.fileSelection += FileView_fileSelection;
                     UserFiles.Items.Add(fileView);
                 }
 
@@ -59,6 +61,13 @@ namespace Client
                     }
                 }
             }
+        }
+
+        //TODO : usuwanie przechowywanego pliku po zmianie folderu
+        //Jeśli plik nie jest wybrany, wysłać stosowny komunikat
+        private void FileView_fileSelection(MyFile file)
+        {
+            this.fileToSend = file;
         }
 
         private void DirectoryView_dirChange(string path)
