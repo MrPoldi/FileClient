@@ -7,13 +7,15 @@
         mc:Ignorable="d"
         Title="Client v.0.1" Height="600" Width="800">
     <Grid>
-        <ListBox Name="UserFiles" HorizontalAlignment="Left" Height="450" Margin="10,30,0,0" VerticalAlignment="Top" Width="450"/>
-        <Button Name="ConnectB" Content="Connect" HorizontalAlignment="Left" Margin="465,128,0,0" VerticalAlignment="Top" Width="120"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="465,51,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="465,100,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Enter server IP Adress" VerticalAlignment="Top" Margin="465,30,0,0" Width="140"/>
-        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Enter server port" VerticalAlignment="Top" Margin="465,79,0,0" Width="140"/>
-        <Button Name="SendB" Content="Send file" HorizontalAlignment="Left" Margin="10,485,0,0" VerticalAlignment="Top" Width="450"/>
+        <ListBox Name="UserFiles" HorizontalAlignment="Left" Height="450" Margin="10,55,0,0" VerticalAlignment="Top" Width="627"/>
+        <Button Name="ConnectB" Content="Connect" HorizontalAlignment="Left" Margin="642,153,0,0" VerticalAlignment="Top" Width="120" Height="20"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="642,76,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="642,125,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Enter server IP Adress" VerticalAlignment="Top" Margin="642,55,0,0" Width="140" Height="16"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Enter server port" VerticalAlignment="Top" Margin="642,104,0,0" Width="140" Height="16"/>
+        <Button Name="SendB" Content="Send file" HorizontalAlignment="Left" Margin="10,510,0,0" VerticalAlignment="Top" Width="627" Height="20"/>
+        <Button Name="BackB" Content="Back" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="562,30,0,0" Click="BackB_Click"/>
+        <TextBlock Name="PathBox" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Margin="10,30,0,0" Width="552" Height="20"/>
 
     </Grid>
 </Window>

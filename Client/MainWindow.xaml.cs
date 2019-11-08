@@ -36,6 +36,7 @@ namespace Client
         private void Refresh(string path)
         {
             UserFiles.Items.Clear();
+            PathBox.Text = currentPath = path;
             dirInfo = new DirectoryInfo(path);
             myDiscElements = myFileManager.EnumerateElements(path);
 
@@ -53,9 +54,23 @@ namespace Client
                     if (!dir.Attributes.HasFlag(FileAttributes.Hidden))
                     {
                         DirView directoryView = new DirView((discElement as MyDirectory));
+                        directoryView.dirChange += DirectoryView_dirChange;
                         UserFiles.Items.Add(directoryView);
                     }
                 }
+            }
+        }
+
+        private void DirectoryView_dirChange(string path)
+        {
+            Refresh(path);
+        }
+
+        private void BackB_Click(object sender, RoutedEventArgs e)
+        {
+            if (currentPath.Length > 3)
+            {
+                Refresh(dirInfo.Parent.FullName);
             }
         }
     }

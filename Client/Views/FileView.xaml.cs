@@ -25,7 +25,7 @@ namespace Client.Views
             this.myFile = myFile;
             InitializeComponent();
             FileName.Text = myFile.Name;
-            FileCreationTime.Text = myFile.CreationDate;
+            FileCreationTime.Text = myFile.CreationDate.ToString();
         }
     }
 }
