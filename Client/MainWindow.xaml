@@ -13,6 +13,7 @@
         <TextBox HorizontalAlignment="Left" Height="23" Margin="465,100,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Enter server IP Adress" VerticalAlignment="Top" Margin="465,30,0,0" Width="140"/>
         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Enter server port" VerticalAlignment="Top" Margin="465,79,0,0" Width="140"/>
+        <Button Name="SendB" Content="Send file" HorizontalAlignment="Left" Margin="10,485,0,0" VerticalAlignment="Top" Width="450"/>
 
     </Grid>
 </Window>
