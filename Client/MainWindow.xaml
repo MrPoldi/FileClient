@@ -5,8 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Client v.0.1" Height="600" Width="800">
     <Grid>
-        
+        <ListBox Name="UserFiles" HorizontalAlignment="Left" Height="450" Margin="10,30,0,0" VerticalAlignment="Top" Width="450"/>
+        <Button Name="ConnectB" Content="Connect" HorizontalAlignment="Left" Margin="465,128,0,0" VerticalAlignment="Top" Width="120"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="465,51,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="465,100,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Enter server IP Adress" VerticalAlignment="Top" Margin="465,30,0,0" Width="140"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Enter server port" VerticalAlignment="Top" Margin="465,79,0,0" Width="140"/>
+
     </Grid>
 </Window>
