@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Client.Classes;
 using Client.Views;
 using System.IO;
@@ -25,10 +13,12 @@ namespace Client
         private string currentPath;
         private DirectoryInfo dirInfo;
         private MyFile fileToSend;
+        private ConnectionController myConnection;
 
         public MainWindow()
         {
-            this.myFileManager = new FileManager();
+            myConnection = new ConnectionController();
+            myFileManager = new FileManager();
             InitializeComponent();
             currentPath = "D:\\";
             Refresh(currentPath);
@@ -63,11 +53,10 @@ namespace Client
             }
         }
 
-        //TODO : usuwanie przechowywanego pliku po zmianie folderu
-        //Jeśli plik nie jest wybrany, wysłać stosowny komunikat
         private void FileView_fileSelection(MyFile file)
         {
-            this.fileToSend = file;
+            fileToSend = file;
+            SendB.Content = "Send: " + fileToSend.Path;
         }
 
         private void DirectoryView_dirChange(string path)
@@ -81,6 +70,45 @@ namespace Client
             {
                 Refresh(dirInfo.Parent.FullName);
             }
+        }
+
+        private void GetListOfFiles(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(ServerIPBox.Text) && !string.IsNullOrEmpty(ServerPortBox.Text))
+            {
+                if (myConnection.CheckIP(ServerIPBox.Text, int.Parse(ServerPortBox.Text)))
+                {
+                    myConnection.GetListOfFiles();
+                }
+
+                if (myConnection.IsConnected)
+                { 
+                    ServerName.Text = "Files from: " + ServerIPBox.Text + ":" + ServerPortBox.Text; 
+                }
+                else
+                { 
+                    ServerName.Text = "Not connected"; 
+                }
+            }
+            else
+                MessageBox.Show("Enter server IP & port");
+        }
+
+        private void SendFile(object sender, RoutedEventArgs e)
+        {
+            if (!myConnection.IsConnected)
+                { MessageBox.Show("You are not connected with any server."); }
+            else
+                myConnection.SendFile();
+        }
+
+        private void DownloadFile(object sender, RoutedEventArgs e)
+        {
+            if(!myConnection.IsConnected)
+                { MessageBox.Show("You are not connected with any server."); }
+            else
+                myConnection.GetFile();
+
         }
     }
 }
