@@ -4,6 +4,7 @@ namespace Client.Classes
 {
     class FileManager
     {
+        //dirs/files enumeration
         internal List<DiscElement> EnumerateElements(string path)
         {
             MyDirectory myDir = new MyDirectory(path);

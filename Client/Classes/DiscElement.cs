@@ -3,6 +3,7 @@ using System.IO;
 
 namespace Client.Classes
 {
+    //simple abstr class for files/dirs
     public abstract class DiscElement
     {
         private string path;

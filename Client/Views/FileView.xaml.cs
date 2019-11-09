@@ -4,6 +4,7 @@ using Client.Classes;
 
 namespace Client.Views
 {
+    //simple file view
     public partial class FileView : UserControl
     {
         private MyFile myFile;
@@ -16,6 +17,7 @@ namespace Client.Views
             FileCreationTime.Text = myFile.CreationDate.ToString();
         }
 
+        //file selection delegate/event on ButtonClick
         public delegate void fileSelect(MyFile file);
         public event fileSelect fileSelection;
 

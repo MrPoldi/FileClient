@@ -15,6 +15,7 @@ namespace Client
         private MyFile fileToSend;
         private ConnectionController myConnection;
 
+        //creating ConnController/FileManager & path selection
         public MainWindow()
         {
             myConnection = new ConnectionController();
@@ -24,6 +25,7 @@ namespace Client
             Refresh(currentPath);
         }
 
+        //this method refresh listbox after directory change
         private void Refresh(string path)
         {
             UserFiles.Items.Clear();
@@ -53,6 +55,7 @@ namespace Client
             }
         }
 
+        //FileView and DirectoryView events execution
         private void FileView_fileSelection(MyFile file)
         {
             fileToSend = file;
@@ -64,6 +67,7 @@ namespace Client
             Refresh(path);
         }
 
+        //return to directory parent unless you are on the disk
         private void BackB_Click(object sender, RoutedEventArgs e)
         {
             if (currentPath.Length > 3)
@@ -72,6 +76,7 @@ namespace Client
             }
         }
 
+        //using ConnectionController to check port/IP address if IP and port box are NOT NULL
         private void GetListOfFiles(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(ServerIPBox.Text) && !string.IsNullOrEmpty(ServerPortBox.Text))
@@ -81,6 +86,7 @@ namespace Client
                     myConnection.GetListOfFiles();
                 }
 
+                //if connection wasn't failed, show server IP:port above the ServerFilesBox
                 if (myConnection.IsConnected)
                 { 
                     ServerName.Text = "Files from: " + ServerIPBox.Text + ":" + ServerPortBox.Text; 
@@ -94,6 +100,7 @@ namespace Client
                 MessageBox.Show("Enter server IP & port");
         }
 
+        //these methods are not implemented yet. They'll work only if GetListOfFiles() method connect with serv.
         private void SendFile(object sender, RoutedEventArgs e)
         {
             if (!myConnection.IsConnected)

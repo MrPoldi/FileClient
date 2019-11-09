@@ -17,7 +17,7 @@ namespace Client.Classes
             get { return isConnected; }
         }
 
-
+        //try to connect a servert and get list of files IN PROGRESS
         internal void GetListOfFiles()
         {
             try
@@ -35,16 +35,19 @@ namespace Client.Classes
             }
         }
 
+        //send local file to server and receive refreshed list of files
         internal void SendFile()
         {
             throw new NotImplementedException();
         }
 
+        //download chosen file from server list IN PROGRESS
         internal void GetFile()
         {
             throw new NotImplementedException();
         }
 
+        //This method checks if IP/port are valid
         internal bool CheckIP(string ip, int port)
         {
             try

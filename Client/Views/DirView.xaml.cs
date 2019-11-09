@@ -4,6 +4,7 @@ using Client.Classes;
 
 namespace Client.Views
 {
+    //simple directory view
     public partial class DirView : UserControl
     {
         private MyDirectory myDir;
@@ -16,6 +17,7 @@ namespace Client.Views
             DirCreationTime.Text = myDir.CreationDate.ToString();
         }
 
+        //directory change delegate/event on ButtonClick
         public delegate void directoryChange(string path);
         public event directoryChange dirChange;
 
