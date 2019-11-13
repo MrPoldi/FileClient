@@ -59,6 +59,9 @@ namespace Client
         private void FileView_fileSelection(MyFile file)
         {
             fileToSend = file;
+            myConnection.FileTSName = file.Name;
+            myConnection.FileTSPath = file.Path;
+            myConnection.FileTSSize = file.Size;
             SendB.Content = "Send: " + fileToSend.Path;
         }
 
@@ -106,7 +109,9 @@ namespace Client
             if (!myConnection.IsConnected)
                 { MessageBox.Show("You are not connected with any server."); }
             else
+            {
                 myConnection.SendFile();
+            }
         }
 
         private void DownloadFile(object sender, RoutedEventArgs e)

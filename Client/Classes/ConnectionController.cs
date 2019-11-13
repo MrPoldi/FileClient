@@ -2,15 +2,44 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Windows;
+using System.Text;
+using System.IO;
 
 namespace Client.Classes
 {
     public class ConnectionController
     {
+        private long rcv;
+        private byte[] buffer;
+        private string opt;
         private IPAddress ipAddr;
         private IPEndPoint endPoint;
         private Socket sender;
+        private long fileToSendSize;
+        private string fileTSPath;
+        private string fileTSName;
         private bool isConnected;
+        private string fileToDownload;
+
+        public long FileTSSize
+        {
+            set { fileToSendSize = value; }
+        }
+
+        public string FileTSPath
+        {
+            set { fileTSPath = value; }
+        }
+
+        public string FileTSName
+        {
+            set { fileTSName = value; }    
+        }
+
+        public string FileToDownload
+        {
+            set { fileToDownload = value; }
+        }
 
         public bool IsConnected
         {
@@ -24,8 +53,8 @@ namespace Client.Classes
             {
                 sender.Connect(endPoint);
                 isConnected = true;
-                //sender.Shutdown(SocketShutdown.Both);
-                sender.Close();
+      
+            
             }
 
             catch(SocketException se)
@@ -38,13 +67,52 @@ namespace Client.Classes
         //send local file to server and receive refreshed list of files
         internal void SendFile()
         {
-            throw new NotImplementedException();
+            try
+            {
+                opt = "a";
+                buffer = Encoding.ASCII.GetBytes(opt);
+                sender.Send(buffer);
+                buffer = Encoding.ASCII.GetBytes(fileTSName);
+                sender.Send(buffer);
+                sender.Receive(buffer, sizeof(long), SocketFlags.None);
+                buffer = BitConverter.GetBytes(fileToSendSize);
+                sender.Send(buffer);
+                sender.Receive(buffer, sizeof(long), SocketFlags.None);
+
+                try
+                {
+                    using (StreamReader sr = new StreamReader(this.fileTSPath))
+                    {
+                        String line = sr.ReadLine();
+                        while (line != null)
+                        {
+                            buffer = Encoding.ASCII.GetBytes(line);
+                            sender.Send(buffer);
+                            line = sr.ReadLine() + "\n";
+                        }
+                    }
+                }
+                catch (IOException e)
+                {
+                    Console.WriteLine("The file could not be read:");
+                    Console.WriteLine(e.Message);
+                }
+
+            }
+            catch(SocketException se)
+            {
+                isConnected = false;
+                MessageBox.Show("SocketException " + se.ToString());
+            }
+
         }
 
         //download chosen file from server list IN PROGRESS
         internal void GetFile()
         {
-            throw new NotImplementedException();
+            sender.Connect(endPoint);
+
+            sender.Close();
         }
 
         //This method checks if IP/port are valid
@@ -69,3 +137,9 @@ namespace Client.Classes
 
     }
 }
+
+//sender.Receive(buffer, sizeof(long), SocketFlags.None);
+//long test1 = BitConverter.ToInt64(buffer, 0);
+//sender.Receive(buffer, 1024, SocketFlags.None);
+//string test2 = Encoding.ASCII.GetString(buffer);
+//MessageBox.Show("String : " + test2 + "\nLong : " + test1.ToString());

@@ -12,5 +12,10 @@
         {
             get { return System.IO.Path.GetExtension(this.Path); }
         }
+
+        public long Size
+        {
+            get { return new System.IO.FileInfo(this.Path).Length; }
+        }
     }
 }
