@@ -4,17 +4,18 @@ using System.Net.Sockets;
 using System.Windows;
 using System.Text;
 using System.IO;
+using Client.Classes;
+using System.Collections.Generic;
 
 namespace Client.Classes
 {
     public class ConnectionController
     {
-        private long rcv;
         private byte[] buffer;
-        private string opt;
         private IPAddress ipAddr;
         private IPEndPoint endPoint;
         private Socket sender;
+        private FileInfo fInfo;
         private long fileToSendSize;
         private string fileTSPath;
         private string fileTSName;
@@ -46,59 +47,63 @@ namespace Client.Classes
             get { return isConnected; }
         }
 
-        //try to connect a servert and get list of files IN PROGRESS
-        internal void GetListOfFiles()
+        //try to connect a servert (DONE)
+        internal void Connect()
         {
-            try
+            if (!isConnected)
             {
-                sender.Connect(endPoint);
-                isConnected = true;
-      
-            
-            }
+                try
+                {
+                    sender.Connect(endPoint);
+                    isConnected = true;
+                }
 
-            catch(SocketException se)
+                catch (SocketException se)
+                {
+                    isConnected = false;
+                    MessageBox.Show("SocketException " + se.ToString());
+                }
+            }
+            else
             {
-                isConnected = false;
-                MessageBox.Show("SocketException " + se.ToString());
+                MessageBox.Show("You are already connected");
             }
         }
 
-        //send local file to server and receive refreshed list of files
+        //send local file to server and receive refreshed list of files (RECEIVING LIST OF FILES IN PROGRESS)
         internal void SendFile()
         {
             try
             {
-                opt = "a";
-                buffer = Encoding.ASCII.GetBytes(opt);
-                sender.Send(buffer);
+                SendRequest("a");
+
+                //sending file name
                 buffer = Encoding.ASCII.GetBytes(fileTSName);
                 sender.Send(buffer);
-                sender.Receive(buffer, sizeof(long), SocketFlags.None);
-                buffer = BitConverter.GetBytes(fileToSendSize);
-                sender.Send(buffer);
-                sender.Receive(buffer, sizeof(long), SocketFlags.None);
 
-                try
+                //sending file length if server is ready
+                if (IsReady())
                 {
-                    using (StreamReader sr = new StreamReader(this.fileTSPath))
-                    {
-                        String line = sr.ReadLine();
-                        while (line != null)
-                        {
-                            buffer = Encoding.ASCII.GetBytes(line);
-                            sender.Send(buffer);
-                            line = sr.ReadLine() + "\n";
-                        }
-                    }
+                    fInfo = new FileInfo(fileTSPath);
+                    buffer = BitConverter.GetBytes(fInfo.Length);
+                    sender.Send(buffer);
+                }           
+
+                //sending file if server is ready
+                if (IsReady())
+                {
+                    sender.SendFile(fileTSPath);
                 }
-                catch (IOException e)
+
+                if (IsReady())
+                    MessageBox.Show("File sent");
+                else
                 {
-                    Console.WriteLine("The file could not be read:");
-                    Console.WriteLine(e.Message);
+                    MessageBox.Show("Server didn't save file : " + fileTSName + ". \nYou are disconnected.");
                 }
 
             }
+
             catch(SocketException se)
             {
                 isConnected = false;
@@ -110,9 +115,34 @@ namespace Client.Classes
         //download chosen file from server list IN PROGRESS
         internal void GetFile()
         {
-            sender.Connect(endPoint);
+            try
+            { 
+                SendRequest("b");
 
-            sender.Close();
+                fileToDownload = "cat1.jpg";
+
+                //sending name of wanted file
+                sender.Send(Encoding.ASCII.GetBytes(fileToDownload));
+                
+                //receiving file length
+                sender.Receive(buffer);
+
+            }
+            catch(SocketException e)
+            {
+                isConnected = false;
+                MessageBox.Show("SocketException " + e.ToString());
+            }
+        }
+        
+        //receiving list of files from server
+        internal List<MyFile> ReturnServerFiles()
+        {
+            List<MyFile> ServFiles = new List<MyFile>();
+           
+            SendRequest("c");
+
+            return ServFiles;
         }
 
         //This method checks if IP/port are valid
@@ -128,18 +158,59 @@ namespace Client.Classes
                 return true;
             }
             catch
-            { 
+            {
                 MessageBox.Show("Enter correct port and IP address");
                 isConnected = false;
                 return false;
             }
         }
 
+        internal bool Disconnect()
+        {
+            if (isConnected)
+            {
+                try
+                {
+                    buffer = Encoding.ASCII.GetBytes("d");
+                    sender.Send(buffer);
+                    sender.Shutdown(SocketShutdown.Both);
+                    isConnected = false;
+                    return true;
+                }
+                catch(SocketException e)
+                {
+                    MessageBox.Show(e.ToString());
+                    isConnected = false;
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private bool IsReady()
+        {
+            bool isReady;
+
+            sender.Receive(buffer, sizeof(bool), 0);
+
+            if (isReady = BitConverter.ToBoolean(buffer, 0))
+                return true;
+            else
+                return false;
+        }
+
+        private void SendRequest(string x)
+        {
+            if(isConnected)
+            {
+                //option conversion
+                buffer = Encoding.ASCII.GetBytes(x);
+                //sending server option
+                sender.Send(buffer);
+            }
+        }
     }
 }
-
-//sender.Receive(buffer, sizeof(long), SocketFlags.None);
-//long test1 = BitConverter.ToInt64(buffer, 0);
-//sender.Receive(buffer, 1024, SocketFlags.None);
-//string test2 = Encoding.ASCII.GetString(buffer);
-//MessageBox.Show("String : " + test2 + "\nLong : " + test1.ToString());
