@@ -14,6 +14,7 @@ namespace Client
         private DirectoryInfo dirInfo;
         private MyFile fileToSend;
         private ConnectionController myConnection;
+        private List<MyFile> SFiles;
 
         //creating ConnController/FileManager & path selection
         public MainWindow()
@@ -86,7 +87,8 @@ namespace Client
             {
                 if (myConnection.CheckIP(ServerIPBox.Text, int.Parse(ServerPortBox.Text)))
                 {
-                    myConnection.GetListOfFiles();
+                    myConnection.Connect();
+                    SFiles = myConnection.ReturnServerFiles();
                 }
 
                 //if connection wasn't failed, show server IP:port above the ServerFilesBox
@@ -121,6 +123,14 @@ namespace Client
             else
                 myConnection.GetFile();
 
+        }
+
+        private void Disconnect(object sender, RoutedEventArgs e)
+        {
+            if(myConnection.Disconnect())
+            {
+                ServerName.Text = "Not connected";
+            }
         }
     }
 }
