@@ -6,21 +6,35 @@ using System.Text;
 using System.IO;
 using Client.Classes;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Client.Classes
 {
     public class ConnectionController
     {
+        //array of bytes
         private byte[] buffer;
+
+        //info about server
         private IPAddress ipAddr;
         private IPEndPoint endPoint;
         private Socket sender;
+
+        //info about files
         private FileInfo fInfo;
         private long fileToSendSize;
         private string fileTSPath;
         private string fileTSName;
-        private bool isConnected;
         private string fileToDownload;
+
+        //info about connection
+        private bool isConnected;
+
+        //setters are used to change variables from MainWindow level
+        public bool IsConnected
+        {
+            get { return isConnected; }
+        }
 
         public long FileTSSize
         {
@@ -42,11 +56,6 @@ namespace Client.Classes
             set { fileToDownload = value; }
         }
 
-        public bool IsConnected
-        {
-            get { return isConnected; }
-        }
-
         //try to connect a servert (DONE)
         internal void Connect()
         {
@@ -64,51 +73,57 @@ namespace Client.Classes
                     MessageBox.Show("SocketException " + se.ToString());
                 }
             }
-            else
-            {
-                MessageBox.Show("You are already connected");
-            }
         }
 
         //send local file to server and receive refreshed list of files (RECEIVING LIST OF FILES IN PROGRESS)
-        internal void SendFile()
+        internal async Task SendFile()
         {
-            try
+            await Task.Factory.StartNew(() =>
             {
-                SendRequest("a");
-
-                //sending file name
-                buffer = Encoding.ASCII.GetBytes(fileTSName);
-                sender.Send(buffer);
-
-                //sending file length if server is ready
-                if (IsReady())
+                try
                 {
-                    fInfo = new FileInfo(fileTSPath);
-                    buffer = BitConverter.GetBytes(fInfo.Length);
+                    SendRequest("a");
+
+                    //sending file name
+                    buffer = Encoding.ASCII.GetBytes(fileTSName);
                     sender.Send(buffer);
-                }           
 
-                //sending file if server is ready
-                if (IsReady())
-                {
-                    sender.SendFile(fileTSPath);
+                    //sending file length if server is ready
+                    if (IsReady())
+                    {
+                        fInfo = new FileInfo(fileTSPath);
+                        buffer = BitConverter.GetBytes(fInfo.Length);
+                        sender.Send(buffer);
+                    }
+
+                    //sending file if server is ready
+                    if (IsReady())
+                    {
+                        sender.SendFile(fileTSPath);
+                    }
+
+                    if (IsReady())
+                        MessageBox.Show("File sent");
+                    else
+                    {
+                        MessageBox.Show("Server didn't save file : " + fileTSName + ". \nYou are disconnected.");
+                    }
+
                 }
 
-                if (IsReady())
-                    MessageBox.Show("File sent");
-                else
+                catch (SocketException se)
                 {
-                    MessageBox.Show("Server didn't save file : " + fileTSName + ". \nYou are disconnected.");
+                    if(isConnected)
+                    {
+                        MessageBox.Show(se.ToString()); ;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Connection failed.");
+                    }
+                    isConnected = false;
                 }
-
-            }
-
-            catch(SocketException se)
-            {
-                isConnected = false;
-                MessageBox.Show("SocketException " + se.ToString());
-            }
+            });
 
         }
 
@@ -127,6 +142,21 @@ namespace Client.Classes
                 //receiving file length
                 sender.Receive(buffer);
 
+                try
+                {
+                    long fileSize = 28040;
+
+                    buffer = BitConverter.GetBytes(fileSize);
+                    fileSize = BitConverter.ToInt64(buffer, 0);
+
+
+                    MessageBox.Show(fileSize.ToString());
+                }
+                catch(ArgumentException e)
+                {
+                    MessageBox.Show(e.ToString());
+                }
+
             }
             catch(SocketException e)
             {
@@ -135,12 +165,17 @@ namespace Client.Classes
             }
         }
         
-        //receiving list of files from server
-        internal List<MyFile> ReturnServerFiles()
+        //receiving list of files from server (IN PROGRESS)
+        internal List<String> ReturnServerFiles()
         {
-            List<MyFile> ServFiles = new List<MyFile>();
-           
+            List<String> ServFiles = new List<String>();
+            string nameFile;
+
             SendRequest("c");
+            sender.Receive(buffer);
+
+            nameFile = Encoding.ASCII.GetString(buffer);
+            ServFiles.Add(nameFile);
 
             return ServFiles;
         }
@@ -165,6 +200,7 @@ namespace Client.Classes
             }
         }
 
+        //disconnect from server
         internal bool Disconnect()
         {
             if (isConnected)
@@ -190,6 +226,7 @@ namespace Client.Classes
             }
         }
 
+        //check if server is ready 
         private bool IsReady()
         {
             bool isReady;
@@ -202,6 +239,7 @@ namespace Client.Classes
                 return false;
         }
 
+        //send string option to server (for example: "a" = server will prepare to receive the file)
         private void SendRequest(string x)
         {
             if(isConnected)

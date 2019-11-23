@@ -3,6 +3,7 @@ using System.Windows;
 using Client.Classes;
 using Client.Views;
 using System.IO;
+using System;
 
 namespace Client
 {
@@ -14,7 +15,7 @@ namespace Client
         private DirectoryInfo dirInfo;
         private MyFile fileToSend;
         private ConnectionController myConnection;
-        private List<MyFile> SFiles;
+        private List<String> SFiles;
 
         //creating ConnController/FileManager & path selection
         public MainWindow()
@@ -56,6 +57,16 @@ namespace Client
             }
         }
 
+        private void ServerFilesRefresh()
+        {
+            ServerFiles.Items.Clear();
+
+            foreach(String s in SFiles)
+            {
+                ServerFiles.Items.Add(s);
+            }
+        }
+
         //FileView and DirectoryView events execution
         private void FileView_fileSelection(MyFile file)
         {
@@ -85,20 +96,29 @@ namespace Client
         {
             if (!string.IsNullOrEmpty(ServerIPBox.Text) && !string.IsNullOrEmpty(ServerPortBox.Text))
             {
-                if (myConnection.CheckIP(ServerIPBox.Text, int.Parse(ServerPortBox.Text)))
+                if (!myConnection.IsConnected && myConnection.CheckIP(ServerIPBox.Text, int.Parse(ServerPortBox.Text)))
                 {
                     myConnection.Connect();
-                    SFiles = myConnection.ReturnServerFiles();
+
+                    if(myConnection.IsConnected)
+                    {
+                        SFiles = myConnection.ReturnServerFiles();
+                        ServerFilesRefresh();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("You are already connected");
                 }
 
                 //if connection wasn't failed, show server IP:port above the ServerFilesBox
                 if (myConnection.IsConnected)
                 { 
-                    ServerName.Text = "Files from: " + ServerIPBox.Text + ":" + ServerPortBox.Text; 
+                    ServerName.Text = "Files from: " + ServerIPBox.Text + ":" + ServerPortBox.Text;
                 }
                 else
-                { 
-                    ServerName.Text = "Not connected"; 
+                {
+                    ServerName.Text = "Not connected";
                 }
             }
             else
@@ -106,18 +126,23 @@ namespace Client
         }
 
         //these methods are not implemented yet. They'll work only if GetListOfFiles() method connect with serv.
-        private void SendFile(object sender, RoutedEventArgs e)
+        private async void SendFile(object sender, RoutedEventArgs e)
         {
+            //if not connected
             if (!myConnection.IsConnected)
                 { MessageBox.Show("You are not connected with any server."); }
+            //if no file choosen in fileToSend var
+            else if(fileToSend == null)
+                { MessageBox.Show("No file to send."); }
             else
             {
-                myConnection.SendFile();
+                await myConnection.SendFile();
             }
         }
 
         private void DownloadFile(object sender, RoutedEventArgs e)
         {
+            //if not connected
             if(!myConnection.IsConnected)
                 { MessageBox.Show("You are not connected with any server."); }
             else
@@ -130,7 +155,13 @@ namespace Client
             if(myConnection.Disconnect())
             {
                 ServerName.Text = "Not connected";
+                ServerFiles.Items.Clear();
             }
+        }
+
+        private void RefreshServerFiles(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
