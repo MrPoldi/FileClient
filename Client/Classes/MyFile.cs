@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Client.Classes
+﻿namespace Client.Classes
 {
     public class MyFile : DiscElement
     {
@@ -17,6 +11,11 @@ namespace Client.Classes
         public string Extension
         {
             get { return System.IO.Path.GetExtension(this.Path); }
+        }
+
+        public long Size
+        {
+            get { return new System.IO.FileInfo(this.Path).Length; }
         }
     }
 }

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Client.Classes
 {
     class FileManager
     {
+        //dirs/files enumeration
         internal List<DiscElement> EnumerateElements(string path)
         {
             MyDirectory myDir = new MyDirectory(path);
@@ -15,9 +12,7 @@ namespace Client.Classes
             List<DiscElement> myFiles = new List<DiscElement>();
 
             discElements.AddRange(myDir.GetMyDirectories());
-            //myFiles.AddRange(myDir.GetMyFiles());
             discElements.AddRange(myDir.GetMyFiles());
-            //discElements.AddRange(myFiles);
             return discElements;
         }
     }

@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Client.Classes;
 using Client.Views;
 using System.IO;
@@ -25,15 +13,20 @@ namespace Client
         private string currentPath;
         private DirectoryInfo dirInfo;
         private MyFile fileToSend;
+        private ConnectionController myConnection;
+        private List<MyFile> SFiles;
 
+        //creating ConnController/FileManager & path selection
         public MainWindow()
         {
-            this.myFileManager = new FileManager();
+            myConnection = new ConnectionController();
+            myFileManager = new FileManager();
             InitializeComponent();
             currentPath = "D:\\";
             Refresh(currentPath);
         }
 
+        //this method refresh listbox after directory change
         private void Refresh(string path)
         {
             UserFiles.Items.Clear();
@@ -63,11 +56,14 @@ namespace Client
             }
         }
 
-        //TODO : usuwanie przechowywanego pliku po zmianie folderu
-        //Jeśli plik nie jest wybrany, wysłać stosowny komunikat
+        //FileView and DirectoryView events execution
         private void FileView_fileSelection(MyFile file)
         {
-            this.fileToSend = file;
+            fileToSend = file;
+            myConnection.FileTSName = file.Name;
+            myConnection.FileTSPath = file.Path;
+            myConnection.FileTSSize = file.Size;
+            SendB.Content = "Send: " + fileToSend.Path;
         }
 
         private void DirectoryView_dirChange(string path)
@@ -75,11 +71,65 @@ namespace Client
             Refresh(path);
         }
 
+        //return to directory parent unless you are on the disk
         private void BackB_Click(object sender, RoutedEventArgs e)
         {
             if (currentPath.Length > 3)
             {
                 Refresh(dirInfo.Parent.FullName);
+            }
+        }
+
+        //using ConnectionController to check port/IP address if IP and port box are NOT NULL
+        private void GetListOfFiles(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(ServerIPBox.Text) && !string.IsNullOrEmpty(ServerPortBox.Text))
+            {
+                if (myConnection.CheckIP(ServerIPBox.Text, int.Parse(ServerPortBox.Text)))
+                {
+                    myConnection.Connect();
+                    SFiles = myConnection.ReturnServerFiles();
+                }
+
+                //if connection wasn't failed, show server IP:port above the ServerFilesBox
+                if (myConnection.IsConnected)
+                { 
+                    ServerName.Text = "Files from: " + ServerIPBox.Text + ":" + ServerPortBox.Text; 
+                }
+                else
+                { 
+                    ServerName.Text = "Not connected"; 
+                }
+            }
+            else
+                MessageBox.Show("Enter server IP & port");
+        }
+
+        //these methods are not implemented yet. They'll work only if GetListOfFiles() method connect with serv.
+        private void SendFile(object sender, RoutedEventArgs e)
+        {
+            if (!myConnection.IsConnected)
+                { MessageBox.Show("You are not connected with any server."); }
+            else
+            {
+                myConnection.SendFile();
+            }
+        }
+
+        private void DownloadFile(object sender, RoutedEventArgs e)
+        {
+            if(!myConnection.IsConnected)
+                { MessageBox.Show("You are not connected with any server."); }
+            else
+                myConnection.GetFile();
+
+        }
+
+        private void Disconnect(object sender, RoutedEventArgs e)
+        {
+            if(myConnection.Disconnect())
+            {
+                ServerName.Text = "Not connected";
             }
         }
     }

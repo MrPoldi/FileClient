@@ -11,6 +11,7 @@ namespace Client.Classes
 
         }
 
+        //Files enumeration
         public List<MyFile> GetMyFiles()
         {
             List<MyFile> myFiles = new List<MyFile>();
@@ -24,6 +25,7 @@ namespace Client.Classes
             return myFiles;
         }
 
+        //Directories enumeration
         public List<MyDirectory> GetMyDirectories()
         {
             List<MyDirectory> myDirectories = new List<MyDirectory>();
