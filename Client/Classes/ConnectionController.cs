@@ -20,6 +20,8 @@ namespace Client.Classes
         private Socket sender;
 
         //info about files
+        private BinaryWriter writer;
+        private BinaryReader reader;
         private FileInfo fInfo;
         private long fileToSendSize;
         private string fileTSPath;
@@ -268,6 +270,7 @@ namespace Client.Classes
 
                 //Create file
                 File.Create("./Files/" + fileName).Close();
+
             }
             catch(IOException ex)
             {
@@ -282,7 +285,7 @@ namespace Client.Classes
                 CreateFile(fileName);
 
                 //creating empty buffer
-                buffer = new byte[1325];
+                buffer = new byte[100000];
 
                 //receiving file length
                 int bytesToRcv = sender.Receive(buffer);
@@ -293,23 +296,26 @@ namespace Client.Classes
                 buffer = BitConverter.GetBytes(true);
                 sender.Send(buffer);
 
-                BinaryWriter writer = new BinaryWriter(File.OpenWrite("./Files/" + fileName));
+                writer = new BinaryWriter(File.OpenWrite("./Files/" + fileName));
 
                 while (bytesRcv < fileSize)
                 {
-                    buffer = new byte[1325];
+                    buffer = new byte[100000];
                     bytesToRcv = sender.Receive(buffer);
                     bytesRcv += bytesToRcv;
-                    writer.Write(buffer, 0, buffer.Length);
+                    writer.Write(buffer, 0, bytesToRcv);
                     writer.Flush();
-
                 }
+
                 writer.Close();
             }
-            catch (SocketException e)
+            catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
-                isConnected = false;
+                if(e is SocketException || e is IOException)
+                {
+                    MessageBox.Show(e.ToString());
+                    isConnected = false;
+                }
             }
         }
     }
