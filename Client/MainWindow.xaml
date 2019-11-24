@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="Client v.0.2" Height="600" Width="1430">
+        Title="Client v.1.0" Height="600" Width="1430">
     <Grid>
         <ListBox Name="UserFiles" HorizontalAlignment="Left" Height="450" Margin="10,55,0,0" VerticalAlignment="Top" Width="627"/>
-        <Button Content="Download list of files" HorizontalAlignment="Left" Margin="642,153,0,0" VerticalAlignment="Top" Width="140" Height="20" Click="GetListOfFiles"/>
-        <TextBox Name="ServerIPBox" HorizontalAlignment="Left" Height="23" Margin="642,76,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="140" Text="150.254.79.6"/>
-        <TextBox Name="ServerPortBox" HorizontalAlignment="Left" Height="23" Margin="642,125,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="140" Text="1233"/>
+        <Button Content="Connect" HorizontalAlignment="Left" Margin="642,153,0,0" VerticalAlignment="Top" Width="140" Height="20" Click="GetListOfFiles"/>
+        <TextBox Name="ServerIPBox" HorizontalAlignment="Left" Height="23" Margin="642,76,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="140" Text="150.254.79.243"/>
+        <TextBox Name="ServerPortBox" HorizontalAlignment="Left" Height="23" Margin="642,125,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="140" Text="1234"/>
         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Enter server IP Adress" VerticalAlignment="Top" Margin="642,55,0,0" Width="140" Height="16"/>
         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Enter server port" VerticalAlignment="Top" Margin="642,104,0,0" Width="140" Height="16"/>
         <Button Name="SendB" Content="Send file" HorizontalAlignment="Left" Margin="10,510,0,0" VerticalAlignment="Top" Width="627" Height="20" Click="SendFile"/>
@@ -18,8 +18,10 @@
         <TextBlock Name="PathBox" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Margin="10,30,0,0" Width="552" Height="20"/>
         <ListBox Name="ServerFiles" HorizontalAlignment="Left" Height="450" Margin="787,55,0,0" VerticalAlignment="Top" Width="627"/>
         <Button Name="DownloadB" Content="Download file" HorizontalAlignment="Left" Margin="787,510,0,0" VerticalAlignment="Top" Width="627" Height="20" Click="DownloadFile"/>
-        <TextBlock Name="ServerName" Text="Not connected" HorizontalAlignment="Left" Margin="787,32,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="20" Width="625"/>
+        <TextBlock Name="ServerName" Text="Not connected" HorizontalAlignment="Left" Margin="787,32,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="20" Width="511" Foreground="Red"/>
         <Button Content="Disconnect" HorizontalAlignment="Left" Margin="642,178,0,0" VerticalAlignment="Top" Width="140" Height="20" Click="Disconnect"/>
+        <Button Content="Refresh server list" HorizontalAlignment="Left" Margin="642,203,0,0" VerticalAlignment="Top" Width="140" Click="RefreshServerFiles"/>
+        <TextBlock Name="StatusBox" HorizontalAlignment="Left" Margin="1303,32,0,0" TextWrapping="Wrap" Text="Server status : " VerticalAlignment="Top" Height="18" Width="109"/>
 
     </Grid>
 </Window>
