@@ -14,6 +14,7 @@ namespace Client
         private string currentPath;
         private DirectoryInfo dirInfo;
         private MyFile fileToSend;
+        private String fileToDownload;
         private ConnectionController myConnection;
         private List<String> SFiles;
 
@@ -63,8 +64,20 @@ namespace Client
 
             foreach(String s in SFiles)
             {
-                ServerFiles.Items.Add(s);
+                if(s.Contains("."))
+                {
+                    ServerFile serverFile = new ServerFile(s);
+                    serverFile.fileSelection += ServerFile_fileSelection;
+                    ServerFiles.Items.Add(serverFile);
+                }
             }
+        }
+
+        private void ServerFile_fileSelection(string fileName)
+        {
+            myConnection.FileToDownload = fileName;
+            fileToDownload = fileName;
+            DownloadB.Content = fileName;
         }
 
         //FileView and DirectoryView events execution
@@ -96,14 +109,19 @@ namespace Client
         {
             if (!string.IsNullOrEmpty(ServerIPBox.Text) && !string.IsNullOrEmpty(ServerPortBox.Text))
             {
-                if (!myConnection.IsConnected && myConnection.CheckIP(ServerIPBox.Text, int.Parse(ServerPortBox.Text)))
+                if (!myConnection.IsConnected)
                 {
-                    myConnection.Connect();
-
-                    if(myConnection.IsConnected)
+                    if(myConnection.CheckIP(ServerIPBox.Text, int.Parse(ServerPortBox.Text)))
                     {
-                        SFiles = myConnection.ReturnServerFiles();
-                        ServerFilesRefresh();
+                        myConnection.Connect();
+
+                        if (myConnection.IsConnected)
+                        {
+                            ServerName.Text = "Files from: " + ServerIPBox.Text + ":" + ServerPortBox.Text;
+                            ServerName.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 255, 0));
+                            SFiles = myConnection.ReturnServerFiles();
+                            ServerFilesRefresh();
+                        }
                     }
                 }
                 else
@@ -111,15 +129,6 @@ namespace Client
                     MessageBox.Show("You are already connected");
                 }
 
-                //if connection wasn't failed, show server IP:port above the ServerFilesBox
-                if (myConnection.IsConnected)
-                { 
-                    ServerName.Text = "Files from: " + ServerIPBox.Text + ":" + ServerPortBox.Text;
-                }
-                else
-                {
-                    ServerName.Text = "Not connected";
-                }
             }
             else
                 MessageBox.Show("Enter server IP & port");
@@ -130,23 +139,49 @@ namespace Client
         {
             //if not connected
             if (!myConnection.IsConnected)
-                { MessageBox.Show("You are not connected with any server."); }
+                { 
+                MessageBox.Show("You are not connected with any server."); 
+            }
             //if no file choosen in fileToSend var
             else if(fileToSend == null)
-                { MessageBox.Show("No file to send."); }
+            { 
+                MessageBox.Show("No file to send."); 
+            }
+            else if (myConnection.IsBusy)
+            {
+                MessageBox.Show("Can't send file if server is busy.");
+            }
             else
             {
+                ServerStatus(true);
                 await myConnection.SendFile();
+                ServerStatus(false);
+                SFiles = myConnection.ReturnServerFiles();
+                ServerFilesRefresh();
             }
         }
 
-        private void DownloadFile(object sender, RoutedEventArgs e)
+        private async void DownloadFile(object sender, RoutedEventArgs e)
         {
             //if not connected
-            if(!myConnection.IsConnected)
-                { MessageBox.Show("You are not connected with any server."); }
+            if (!myConnection.IsConnected)
+            { 
+                MessageBox.Show("You are not connected with any server."); 
+            }
+            else if (fileToDownload == null)
+            { 
+                MessageBox.Show("No file to download.");
+            }
+            else if (myConnection.IsBusy)
+            {
+                MessageBox.Show("Can't download file if server is busy.");
+            }
             else
-                myConnection.GetFile();
+            {
+                ServerStatus(true);
+                await myConnection.GetFile();
+                ServerStatus(false);
+            }
 
         }
 
@@ -155,13 +190,46 @@ namespace Client
             if(myConnection.Disconnect())
             {
                 ServerName.Text = "Not connected";
+                ServerName.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255,0,0));
                 ServerFiles.Items.Clear();
+                fileToSend = null;
+                fileToDownload = null;
+                SendB.Content = "Send file";
+                DownloadB.Content = "Download file";
+                StatusBox.Text = "Server status : ";
+                StatusBox.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 0, 0));
+
             }
         }
 
         private void RefreshServerFiles(object sender, RoutedEventArgs e)
         {
+            if (myConnection.IsConnected)
+            {
+                if(!myConnection.IsBusy)
+                {
+                    SFiles = myConnection.ReturnServerFiles();
+                    ServerFilesRefresh();
+                }
+                else
+                    MessageBox.Show("Server is busy.");
+            }
+            else
+                MessageBox.Show("You are not connected with any server");
+        }
 
+        private void ServerStatus(bool isBusy)
+        {
+            if(isBusy)
+            {
+                StatusBox.Text = "Server status : Busy";
+                StatusBox.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 0, 0));
+            }
+            else
+            {
+                StatusBox.Text = "Server status : Free";
+                StatusBox.Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 255, 0));
+            }
         }
     }
 }
